@@ -1,0 +1,51 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namespaces_bus_name": {
+            "defaultValue": "devacademy-development-bus",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.ServiceBus/namespaces",
+            "apiVersion": "2017-04-01",
+            "name": "[parameters('namespaces_bus_name')]",
+            "location": "West Europe",
+            "tags": {
+                "environment": "development",
+                "source": "terraform"
+            },
+            "sku": {
+                "name": "Standard",
+                "tier": "Standard"
+            },
+            "properties": {
+                "provisioningState": "Succeeded",
+                "metricId": "[concat('6cee5873-c344-405f-9929-a96ed3ef7813:', parameters('namespaces_bus_name'))]",
+                "createdAt": "2019-06-16T11:08:43.83Z",
+                "updatedAt": "2019-06-16T11:09:27.12Z",
+                "serviceBusEndpoint": "[concat('https://', parameters('namespaces_bus_name'), '.servicebus.windows.net:443/')]",
+                "status": "Active"
+            }
+        },
+        {
+            "type": "Microsoft.ServiceBus/namespaces/AuthorizationRules",
+            "apiVersion": "2017-04-01",
+            "name": "[concat(parameters('namespaces_bus_name'), '/RootManageSharedAccessKey')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.ServiceBus/namespaces', parameters('namespaces_bus_name'))]"
+            ],
+            "properties": {
+                "rights": [
+                    "Listen",
+                    "Manage",
+                    "Send"
+                ]
+            }
+        }
+    ]
+}
